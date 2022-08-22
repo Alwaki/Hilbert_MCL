@@ -6,7 +6,7 @@
 * [Troubleshooting](#troubleshooting)
 
 ## General info
-This project simulates Monte Carlo Localization (MCL) on a continuous map, namely the sparse Hilbert map.
+This project simulates Monte Carlo Localization (MCL) on a continuous map, namely the sparse Hilbert map. A more detailed description can be found [here](https://www.google.com)
 	
 ## Description
 	
