@@ -44,5 +44,5 @@ beam_nbr = 20;
 sensor_range_cutoff = 20;
 sensor_noise_inflation = 0.1;
 sensor_cutoff_flag = 0;                  % 0: no removal, 1: remove at cutoff
-inflate_sensor_noise = 1;                % 0: normal, 1: add 10x noise
+inflate_sensor_noise = 1;                % 0: normal noise, 1: add further noise
 plotting_flag = 1;                       % 0: No plotting, 1: plotting enabled
