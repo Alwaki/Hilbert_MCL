@@ -45,6 +45,7 @@ classdef ParameterContainer
         plotting_flag;
         inflate_noise;
         sensor_cutoff_flag;
+        parallel_flag;
     end
 
     methods
@@ -58,7 +59,7 @@ classdef ParameterContainer
                 raycast_max_length, point_mu, point_sigma, ...
                 beam_sensor_variance, likelihood_model, tracking_type, ...
                 plotting_flag, inflate_noise, sensor_cutoff_flag, components, ...
-                gamma, distance_cutoff)
+                gamma, distance_cutoff, parallel_flag)
             
             obj.nbr_simulation_iterations = nbr_simulation_iterations;
             obj.tracking_particle_count = tracking_particle_count;
@@ -88,6 +89,7 @@ classdef ParameterContainer
             obj.plotting_flag = plotting_flag;
             obj.inflate_noise = inflate_noise;
             obj.sensor_cutoff_flag = sensor_cutoff_flag;
+            obj.parallel_flag = parallel_flag;
             obj.components = components;
             obj.gamma = gamma;
             obj.distance_cutoff = distance_cutoff;
