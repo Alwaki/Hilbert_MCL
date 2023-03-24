@@ -11,7 +11,9 @@ function [data, measurement_angles, model, full_path] = generateSimulatedData(pa
 
 % Set temporary name (helps for parallel data handling)
 data = tempname;
-disp("Generating new map...")
+if ~params.parallel_flag
+    disp("Generating new map...")
+end
 
 % Create 2D binary occupancy map with maze structure
 map = mapMaze(100,50,'MapSize',[20 10],'MapResolution',50);
@@ -120,7 +122,9 @@ freeLabels = zeros(size(freePoints(:,1)));
 labels = [hitLabels;freeLabels];
 
 % Train python classifier with points and labels
-disp("Training model...")
+if ~params.parallel_flag
+    disp("Training model...")
+end
 centers = py.util.sampling_coordinates(params.xlim, params.ylim, params.components);
 model = py.hilbert_map.SparseHilbertMap(centers, params.gamma, params.distance_cutoff);
 model.add(points, labels)
