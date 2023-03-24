@@ -1,11 +1,6 @@
 function [particles] = resample(particles)
-% FUNCTION:     Resample particles according to weights
-%
-% DESCRIPTION:  Follows systematic resampling method
-%
-% PARAMETERS:   particles: object handle, set of sample poses and weights
-%
-% RETURN:       particles: resampled particle set
+%resample Resamples particles according to weights
+%           Follows the systematic resampling method
 
 factor = 1/particles.particle_count;
 r =  (factor).*rand();

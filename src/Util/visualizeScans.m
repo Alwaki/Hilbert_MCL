@@ -13,10 +13,9 @@ function visualizeScans(freePoints, hitPoints, ground_truth)
 
 % Plot points
 figure(3)
-scatter(hitPoints(:,1),hitPoints(:,2))
+scatter(hitPoints(:,1),hitPoints(:,2), 'red')
 hold on
-scatter(freePoints(:,1),freePoints(:,2))
-legend("Occupied","Free")
-%hold on
-%plot(ground_truth(:,1),ground_truth(:,2), 'w-', 'LineWidth',2)
+scatter(freePoints(:,1),freePoints(:,2), 'blue')
+legend("Occupied","Free", "Path")
+plot(ground_truth(:,1),ground_truth(:,2), 'k-', 'LineWidth',2)
 hold off

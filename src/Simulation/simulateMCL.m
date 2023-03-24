@@ -1,5 +1,6 @@
-function [euc_error, heading_error] = simulateMCL(logfile, model, ...
-    params)
+function [error_pos, error_rot, stdev_pos, stdev_rot, mean_time, success_factor] = ...
+    simulateMCL(logfile, full_angles, model, ...
+    params, ground_truth, iteration)
 % FUNCTION:     Attempts to perform localization with given data
 %
 % DESCRIPTION:  
@@ -18,7 +19,8 @@ if params.tracking_type
     particles = particles.initialize_unknownPose(params.global_particle_count,...
         params.xlim, params.ylim);
 else
-    particles = particles.initialize_knownPose(params.tracking_particle_count,[2.5,2,0]);
+    particles = particles.initialize_knownPose(params.tracking_particle_count, ...
+        params.waypoints(1,:));
 end
 
 % Create heatmap for plotting if applicable
@@ -40,6 +42,14 @@ if params.plotting_flag
     end
 end
 
+% Default returns
+error_pos = 0;
+error_rot = 0;
+stdev_pos = 0;
+stdev_rot = 0;
+mean_time = 0;
+success_factor = 0;
+
 % Split data in lines for sequential reading
 data = readlines(logfile);
 line_count = length(data);
@@ -48,8 +58,10 @@ prev_odom = [];
 % Create statistics containers
 euc_error = [];
 heading_error = [];
+times = [];
 k = 1;
 
+fprintf("Simulating run with id %d...\n", iteration)
 % Loop through lines of data
 for i = 1:line_count
     line = split(data(i));
@@ -67,7 +79,7 @@ for i = 1:line_count
 
     % Observation update
     elseif line(1) == "FLASER"
-        laser_count  = str2double(line(2));
+        laser_count   = str2double(line(2));
         ranges        = str2double(line(3:laser_count+2));
         ranges        = transpose(ranges);
         % Cutoff range measurements if needed
@@ -80,33 +92,32 @@ for i = 1:line_count
             ranges = ranges + normrnd(0, params.sensor_range_noise, 1, length(ranges));
         end
         % Update belief
-        particles    = observationUpdate(particles, ranges, model, ...
-            params.beam_nbr, params.raycast_occupancy_limit, params.raycast_sampling_interval, ...
-            params.raycast_max_length, params.beam_sensor_variance, params.likelihood_model, ...
-            params.point_mu, params.point_sigma);
+        [particles, time]    = observationUpdate(particles, ranges, full_angles(k,:),...
+            model, params);
 
         % Generate error statistics
         [~,id] = max(particles.weights);
-        euclidean = hypot(particles.poses(id,1)-params.gt(k,1), ...
-            particles.poses(id,2)-params.gt(k,2));
-        heading = abs(particles.poses(id,3)-params.gt(k,3));
+        euclidean = hypot(particles.poses(id,1)-ground_truth(k,1), ...
+            particles.poses(id,2)-ground_truth(k,2));
+        heading = abs(particles.poses(id,3)-ground_truth(k,3));
         k = k + 1;
 
         % Divergence/Convergence check
         if euclidean > 1.0 && params.tracking_type == 0
-            disp("Tracking diverged.")
+            fprintf("Tracking simulation with id %d diverged.\n", iteration)
             break
         elseif euclidean < 1.0 && params.tracking_type == 1
-            disp("Global localization converged.")
+            fprintf("Global localization simulation with id %d converged.\n", iteration)
             break
         elseif k > 5 && params.tracking_type == 1
-            disp("Global localization did not converge, abandoning simulation.")
+            fprintf("Global localization simulation with id %d did not converge.\n", iteration)
             break
         end
         
         % Add error statistics
         euc_error = [euc_error, euclidean];
         heading_error = [heading_error, heading];
+        times = [times time];
 
     end
     
@@ -119,7 +130,7 @@ for i = 1:line_count
     
         axis(scaling*[params.xlim(1) params.xlim(2) params.ylim(1) params.ylim(2)])
         hold on
-        plot_dir(params.gt(:,1).*scaling, params.gt(:,2).*scaling);
+        plot_dir(ground_truth(:,1).*scaling, ground_truth(:,2).*scaling);
         hold on
         scatter(particles.poses(:,1).*scaling, ...
             particles.poses(:,2).*scaling, 20, "magenta", 'filled')
@@ -128,6 +139,16 @@ for i = 1:line_count
         hold off
         drawnow
     end
+end
+
+if(length(euc_error) == length(ground_truth))
+        error_pos = rms(euc_error);
+        error_rot = rms(heading_error);
+        stdev_pos = std(euc_error);
+        stdev_rot = std(heading_error);
+        mean_time = mean(times);
+        success_factor = 1/params.nbr_simulation_iterations;
+        fprintf("Tracking simulation with id %d finished, adding data.\n", iteration)
 end
 
 end

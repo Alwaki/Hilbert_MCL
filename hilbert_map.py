@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Implementation of Fourier, Nystroem, and sparse feature based Hilbert maps."""
+"""Implementation of sparse feature based Hilbert maps."""
 
 import numpy as np
 import random
@@ -48,7 +48,7 @@ class SparseHilbertMap(object):
         self.use_rkhs = use_rkhs
         self.batch_size = 10000
         self.classifier = SGDClassifier(
-            loss="log",
+            loss="log_loss",
             penalty="elasticnet",
             alpha=0.0001,
             l1_ratio=0.80,

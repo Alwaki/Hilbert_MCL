@@ -1,6 +1,5 @@
 classdef ParticleSet
-    %UNTITLED7 Summary of this class goes here
-    %   Detailed explanation goes here
+    % ParticleSet container for particles (samples)
 
     properties
         poses;
@@ -9,18 +8,15 @@ classdef ParticleSet
     end
 
     methods
+        % Constructor local tracking
         function obj = initialize_knownPose(obj, particle_count, initial_pose)
-            %UNTITLED7 Construct an instance of this class
-            %   Detailed explanation goes here
             obj.particle_count = particle_count;
             obj.weights = ones(particle_count,1).*1/particle_count;
             % Assume pose of 1x3 structure
             obj.poses = repmat(initial_pose, particle_count, 1);
         end
-
+        % Constructor global tracking
         function obj = initialize_unknownPose(obj, particle_count, xlim, ylim)
-            %UNTITLED7 Construct an instance of this class
-            %   Detailed explanation goes here
             obj.particle_count = particle_count;
             obj.weights = ones(particle_count,1).*1/particle_count;
             x = xlim(1) + (xlim(2)-xlim(1)).*rand(particle_count,1);
