@@ -12,17 +12,16 @@ classdef ParticleSet
         function obj = initialize_knownPose(obj, particle_count, initial_pose)
             obj.particle_count = particle_count;
             obj.weights = ones(particle_count,1).*1/particle_count;
-            % Assume pose of 1x3 structure
             obj.poses = repmat(initial_pose, particle_count, 1);
         end
         % Constructor global tracking
-        function obj = initialize_unknownPose(obj, particle_count, xlim, ylim)
+        function obj = initialize_unknownPose(obj, particle_count, ground_truth)
             obj.particle_count = particle_count;
             obj.weights = ones(particle_count,1).*1/particle_count;
-            x = xlim(1) + (xlim(2)-xlim(1)).*rand(particle_count,1);
-            y = ylim(1) + (ylim(2)-ylim(1)).*rand(particle_count,1);
+            sampled_pos = datasample(ground_truth(:,1:2), particle_count, 1);
+            perturbed_pos = sampled_pos + -1 + (1+1).*rand(particle_count,2);
             theta = wrapToPi((2*pi).*rand(particle_count,1));
-            obj.poses = [x y theta];
+            obj.poses = [perturbed_pos(:,1) perturbed_pos(:,2) theta];
         end
     end
 end
