@@ -12,8 +12,10 @@
 %
 % Author:           Alexander Wallen Kiessling
 %
-% Version:          Version 2.0 (March 2023)
+% Version:          Version 2.1 (June 2023)
 %
+
+% NOTE: Changing parameters is done in src/Simulation/parameters
 
 % Setup (set paths, load parameters, create containers)
 setup;
