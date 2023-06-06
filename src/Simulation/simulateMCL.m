@@ -17,7 +17,7 @@ function [error_pos, error_rot, stdev_pos, stdev_rot, mean_time, success_factor]
 particles = ParticleSet;
 if params.tracking_type
     particles = particles.initialize_unknownPose(params.global_particle_count,...
-        params.xlim, params.ylim);
+        ground_truth);
 else
     particles = particles.initialize_knownPose(params.tracking_particle_count, ...
         params.waypoints(1,:));
